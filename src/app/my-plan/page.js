@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState } from "react";
@@ -68,32 +69,35 @@ function TabSwitch({ tab, onChange }) {
 
   return (
     <div className="card-surface inline-flex gap-1 rounded-full p-1">
-      {tabs.map((t) => (
+      {tabs.map((item) => (
         <button
-          key={t.id}
-          onClick={() => onChange(t.id)}
-          className={`font-display rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-wide transition ${
-            tab === t.id
+          key={item.id}
+          type="button"
+          onClick={() => onChange(item.id)}
+          className={`font-display cursor-pointer rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-wide transition ${
+            tab === item.id
               ? "bg-foreground text-background"
               : "text-muted hover:text-foreground"
           }`}
         >
-          {t.label}
+          {item.label}
         </button>
       ))}
     </div>
   );
 }
 
-function EmptyState() {
+function EmptyState({ tab }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border py-20 text-center">
       <h3 className="font-display text-xl font-bold uppercase tracking-wide">
         Nothing here yet
       </h3>
 
-      <p className="whitespace-nowrap text-sm text-muted">
-        Browse the library and add a lift to get today moving.
+      <p className="text-sm text-muted">
+        {tab === "plan"
+          ? "Browse the library and add a lift to get today moving."
+          : "Save a workout from the library to see it here."}
       </p>
 
       <div className="my-1 flex items-center gap-3">
@@ -103,7 +107,7 @@ function EmptyState() {
 
       <Link
         href="/"
-        className="accent-pill rounded-full px-5 py-2.5 font-display text-sm font-semibold uppercase tracking-wide"
+        className="accent-pill cursor-pointer rounded-full px-5 py-2.5 font-display text-sm font-semibold uppercase tracking-wide"
       >
         Go to workouts
       </Link>
@@ -133,9 +137,7 @@ function PlanItemCard({
       <div className="flex-1">
         <h3
           className={`font-display text-base font-semibold uppercase tracking-wide ${
-            isDone
-              ? "text-muted line-through"
-              : ""
+            isDone ? "text-muted line-through" : ""
           }`}
         >
           {workout.name}
@@ -158,33 +160,28 @@ function PlanItemCard({
       <div className="flex flex-none flex-wrap items-center gap-2">
         <Link
           href={`/workout/${workout.id}`}
-          className="outline-pill rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wide"
+          className="outline-pill cursor-pointer rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wide transition hover:border-foreground"
         >
           View Details
         </Link>
 
         {showDone && (
           <button
-            onClick={() =>
-              onToggleDone(workout.id)
-            }
-            disabled={isDone}
-            className="accent-pill flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wide transition disabled:cursor-not-allowed disabled:opacity-60"
+            type="button"
+            onClick={() => onToggleDone(workout.id)}
+            className="accent-pill flex cursor-pointer items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wide transition hover:opacity-90"
           >
             <CheckCircle2 size={14} />
 
-            {isDone
-              ? "Done"
-              : "Mark as Done"}
+            {isDone ? "Done" : "Mark as Done"}
           </button>
         )}
 
         <button
-          onClick={() =>
-            onRemove(workout.id)
-          }
+          type="button"
+          onClick={() => onRemove(workout.id)}
           title="Remove"
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted transition hover:border-red-400 hover:text-red-400"
+          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border text-muted transition hover:border-red-400 hover:text-red-400"
         >
           <X size={18} />
         </button>
@@ -206,38 +203,43 @@ export default function MyPlanPage() {
 
   const [tab, setTab] = useState("plan");
   const [query, setQuery] = useState("");
-  const [sortBy, setSortBy] =
-    useState("duration");
+  const [sortBy, setSortBy] = useState("duration");
 
-  const activeList =
-    tab === "plan" ? plan : saved;
+  const activeList = tab === "plan" ? plan : saved;
 
   const filteredList = useMemo(() => {
-    const filtered = activeList.filter(
-      (w) =>
-        `${w.name} ${w.muscleGroups.join(" ")}`
-          .toLowerCase()
-          .includes(query.toLowerCase())
-    );
+    const searchText = query.trim().toLowerCase();
+
+    const filtered = activeList.filter((workout) => {
+      const searchableText = `${workout.name} ${
+        workout.muscleGroups?.join(" ") || ""
+      }`.toLowerCase();
+
+      return searchableText.includes(searchText);
+    });
 
     return [...filtered].sort(
-      (a, b) => b[sortBy] - a[sortBy]
+      (a, b) => Number(b[sortBy]) - Number(a[sortBy])
     );
   }, [activeList, query, sortBy]);
 
   const metrics = useMemo(
     () => ({
-      exercises: plan.length,
-      minutes: plan.reduce(
-        (sum, w) => sum + w.duration,
+      exercises: activeList.length,
+
+      minutes: activeList.reduce(
+        (sum, workout) =>
+          sum + Number(workout.duration || 0),
         0
       ),
-      calories: plan.reduce(
-        (sum, w) => sum + w.caloriesBurned,
+
+      calories: activeList.reduce(
+        (sum, workout) =>
+          sum + Number(workout.caloriesBurned || 0),
         0
       ),
     }),
-    [plan]
+    [activeList]
   );
 
   return (
@@ -267,7 +269,11 @@ export default function MyPlanPage() {
           <SearchBar
             value={query}
             onChange={setQuery}
-            placeholder="Search your plan..."
+            placeholder={
+              tab === "plan"
+                ? "Search your plan..."
+                : "Search saved workouts..."
+            }
           />
 
           <SortDropdown
@@ -283,7 +289,7 @@ export default function MyPlanPage() {
             Loading workouts...
           </p>
         ) : filteredList.length === 0 ? (
-          <EmptyState />
+          <EmptyState tab={tab} />
         ) : (
           <div className="flex flex-col gap-4">
             {filteredList.map((workout) => (

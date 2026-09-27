@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -70,13 +71,18 @@ export function PlanProvider({ children }) {
   }, [done, hydrated]);
 
   const isInPlan = useCallback(
-    (id) => plan.some((w) => w.id === id),
+    (id) => plan.some((workout) => workout.id === id),
     [plan]
   );
 
   const isSaved = useCallback(
-    (id) => saved.some((w) => w.id === id),
+    (id) => saved.some((workout) => workout.id === id),
     [saved]
+  );
+
+  const isDone = useCallback(
+    (id) => done.includes(id),
+    [done]
   );
 
   const addToPlan = useCallback(
@@ -105,7 +111,9 @@ export function PlanProvider({ children }) {
   const addToSaved = useCallback(
     (workout) => {
       if (isSaved(workout.id)) {
-        toast.info(`${workout.name} is already saved`);
+        toast.info(
+          `${workout.name} is already saved for later`
+        );
         return;
       }
 
@@ -117,32 +125,42 @@ export function PlanProvider({ children }) {
   );
 
   const removeFromPlan = useCallback((id) => {
-    setPlan((prev) => prev.filter((w) => w.id !== id));
+    setPlan((prev) =>
+      prev.filter((workout) => workout.id !== id)
+    );
 
-    setDone((prev) => prev.filter((d) => d !== id));
+    setDone((prev) =>
+      prev.filter((doneId) => doneId !== id)
+    );
 
     toast.info("Removed from today's plan");
   }, []);
 
   const removeFromSaved = useCallback((id) => {
-    setSaved((prev) => prev.filter((w) => w.id !== id));
+    setSaved((prev) =>
+      prev.filter((workout) => workout.id !== id)
+    );
 
     toast.info("Removed from saved");
   }, []);
 
   const toggleDone = useCallback(
     (id) => {
-      if (done.includes(id)) return;
+      if (done.includes(id)) {
+        toast.info("Already marked as done");
+        return;
+      }
 
-      setDone((prev) => [...prev, id]);
+      setDone((prev) => {
+        if (prev.includes(id)) {
+          return prev;
+        }
+
+        return [...prev, id];
+      });
 
       toast.success("Marked as done");
     },
-    [done]
-  );
-
-  const isDone = useCallback(
-    (id) => done.includes(id),
     [done]
   );
 

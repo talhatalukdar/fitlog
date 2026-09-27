@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -23,7 +24,7 @@ const SPEC_ROWS = [
 export default function WorkoutDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const { addToPlan, addToSaved, isInPlan, isSaved, plan } = usePlan();
+  const { addToPlan, addToSaved, isInPlan, plan } = usePlan();
 
   const [workout, setWorkout] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -77,7 +78,7 @@ export default function WorkoutDetailPage() {
 
         <button
           onClick={() => router.push("/")}
-          className="accent-pill mt-6 inline-flex items-center gap-2 rounded-full px-5 py-2.5 font-display text-sm font-semibold uppercase"
+          className="accent-pill mt-6 inline-flex cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 font-display text-sm font-semibold uppercase"
         >
           Back to library
         </button>
@@ -86,27 +87,26 @@ export default function WorkoutDetailPage() {
   }
 
   const alreadyPlanned = isInPlan(workout.id);
-  const alreadySaved = isSaved(workout.id);
   const planFull = plan.length >= 5 && !alreadyPlanned;
 
   return (
     <div className="mx-auto max-w-[1920px] px-6 py-10 lg:px-12">
       <Link
         href="/"
-        className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground"
+        className="mb-6 inline-flex cursor-pointer items-center gap-1.5 text-sm text-muted hover:text-foreground"
       >
         <ArrowLeft size={16} />
         Back to library
       </Link>
 
       <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
-        <div className="relative h-72 w-full overflow-hidden rounded-2xl bg-black/30 sm:h-96">
+        <div className="relative h-[480px] w-full overflow-hidden rounded-2xl bg-black/30 sm:h-[600px] md:h-[680px]">
           <Image
             src={workout.image}
             alt={workout.name}
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover"
+            className="object-contain"
             priority
           />
         </div>
@@ -166,24 +166,19 @@ export default function WorkoutDetailPage() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <button
               onClick={() => addToPlan(workout)}
-              disabled={alreadyPlanned || planFull}
-              className="accent-pill flex items-center justify-center gap-2 rounded-full px-6 py-3 font-display text-sm font-semibold uppercase tracking-wide transition disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={planFull}
+              className="accent-pill flex cursor-pointer items-center justify-center gap-2 rounded-full px-6 py-3 font-display text-sm font-semibold uppercase tracking-wide transition disabled:cursor-not-allowed disabled:opacity-50"
             >
               <CalendarPlus size={18} />
-
-              {alreadyPlanned
-                ? "In today's plan"
-                : "Add to today's plan"}
+              Add to today&apos;s plan
             </button>
 
             <button
               onClick={() => addToSaved(workout)}
-              disabled={alreadySaved}
-              className="outline-pill flex items-center justify-center gap-2 rounded-full px-6 py-3 font-display text-sm font-semibold uppercase tracking-wide transition disabled:cursor-not-allowed disabled:opacity-50"
+              className="outline-pill flex cursor-pointer items-center justify-center gap-2 rounded-full px-6 py-3 font-display text-sm font-semibold uppercase tracking-wide transition"
             >
               <Bookmark size={18} />
-
-              {alreadySaved ? "Saved" : "Save for later"}
+              Save for later
             </button>
           </div>
 
