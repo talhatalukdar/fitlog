@@ -37,6 +37,7 @@ export default function Hero() {
             src="/banner.png"
             alt="Workout illustration"
             fill
+            sizes="(max-width: 640px) 256px, 320px"
             className="relative object-contain"
             priority
           />

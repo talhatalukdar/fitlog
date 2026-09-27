@@ -1,4 +1,6 @@
 import "./globals.css";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { PlanProvider } from "@/context/PlanContext";
@@ -15,12 +17,14 @@ export default function RootLayout({ children }) {
       <body className="flex min-h-screen flex-col antialiased">
         <PlanProvider>
           <Navbar />
-
-          <main className="flex-1">
-            {children}
-          </main>
-
+          <main className="flex-1">{children}</main>
           <Footer />
+          <ToastContainer
+            position="bottom-right"
+            theme="dark"
+            autoClose={2200}
+            newestOnTop
+          />
         </PlanProvider>
       </body>
     </html>

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { usePlan } from "@/context/PlanContext";
 
 const links = [
   { href: "/", label: "Workouts" },
@@ -11,6 +12,7 @@ const links = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { plan, saved } = usePlan();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
@@ -59,7 +61,7 @@ export default function Navbar() {
             Plan
 
             <span className="accent-pill flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold">
-              0
+              {plan.length}
             </span>
           </Link>
 
@@ -70,7 +72,7 @@ export default function Navbar() {
             Saved
 
             <span className="outline-pill flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold">
-              0
+              {saved.length}
             </span>
           </Link>
         </div>

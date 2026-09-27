@@ -44,13 +44,30 @@ export function PlanProvider({ children }) {
 
   useEffect(() => {
     if (!hydrated) return;
-    window.localStorage.setItem(PLAN_KEY, JSON.stringify(plan));
+
+    window.localStorage.setItem(
+      PLAN_KEY,
+      JSON.stringify(plan)
+    );
   }, [plan, hydrated]);
 
   useEffect(() => {
     if (!hydrated) return;
-    window.localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
+
+    window.localStorage.setItem(
+      SAVED_KEY,
+      JSON.stringify(saved)
+    );
   }, [saved, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
+    window.localStorage.setItem(
+      DONE_KEY,
+      JSON.stringify(done)
+    );
+  }, [done, hydrated]);
 
   const isInPlan = useCallback(
     (id) => plan.some((w) => w.id === id),
@@ -65,16 +82,21 @@ export function PlanProvider({ children }) {
   const addToPlan = useCallback(
     (workout) => {
       if (isInPlan(workout.id)) {
-        toast.info(`${workout.name} is already in today's plan`);
+        toast.info(
+          `${workout.name} is already in today's plan`
+        );
         return;
       }
 
       if (plan.length >= PLAN_CAP) {
-        toast.error(`Plan is capped at ${PLAN_CAP} lifts for today`);
+        toast.error(
+          `Plan is capped at ${PLAN_CAP} lifts for today`
+        );
         return;
       }
 
       setPlan((prev) => [...prev, workout]);
+
       toast.success("Added to today's plan");
     },
     [isInPlan, plan.length]
@@ -88,6 +110,7 @@ export function PlanProvider({ children }) {
       }
 
       setSaved((prev) => [...prev, workout]);
+
       toast.success("Saved for later");
     },
     [isSaved]
@@ -95,30 +118,33 @@ export function PlanProvider({ children }) {
 
   const removeFromPlan = useCallback((id) => {
     setPlan((prev) => prev.filter((w) => w.id !== id));
+
     setDone((prev) => prev.filter((d) => d !== id));
+
     toast.info("Removed from today's plan");
   }, []);
 
   const removeFromSaved = useCallback((id) => {
     setSaved((prev) => prev.filter((w) => w.id !== id));
+
     toast.info("Removed from saved");
   }, []);
 
-  const toggleDone = useCallback((id) => {
-    setDone((prev) => {
-      const next = prev.includes(id)
-        ? prev.filter((d) => d !== id)
-        : [...prev, id];
+  const toggleDone = useCallback(
+    (id) => {
+      if (done.includes(id)) return;
 
-      toast.success(
-        next.includes(id) ? "Marked as done" : "Marked as not done"
-      );
+      setDone((prev) => [...prev, id]);
 
-      return next;
-    });
-  }, []);
+      toast.success("Marked as done");
+    },
+    [done]
+  );
 
-  const isDone = useCallback((id) => done.includes(id), [done]);
+  const isDone = useCallback(
+    (id) => done.includes(id),
+    [done]
+  );
 
   const value = useMemo(
     () => ({
@@ -162,7 +188,9 @@ export function usePlan() {
   const ctx = useContext(PlanContext);
 
   if (!ctx) {
-    throw new Error("usePlan must be used within a PlanProvider");
+    throw new Error(
+      "usePlan must be used within a PlanProvider"
+    );
   }
 
   return ctx;
