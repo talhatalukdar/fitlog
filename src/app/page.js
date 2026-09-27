@@ -1,20 +1,21 @@
+import Hero from "@/components/Hero";
+
 export default function Home() {
   return (
-    <main className="flex min-h-[70vh] items-center justify-center">
-      <div className="text-center">
-        <p className="font-display text-sm uppercase tracking-[0.3em] text-muted">
-          Welcome to
-        </p>
+    <>
+      <Hero />
 
-        <h1 className="mt-3 font-display text-6xl font-bold tracking-tight">
-          FITLOG
-        </h1>
+      <section id="library" className="mx-auto max-w-[1920px] px-6 pb-16 lg:px-12">
+        <div className="card-surface rounded-3xl p-8 text-center">
+          <h2 className="font-display text-2xl font-bold uppercase tracking-wide">
+            Workout Library
+          </h2>
 
-        <p className="mx-auto mt-4 max-w-md text-muted">
-          Your workout library for discovering exercises and building your
-          training plan.
-        </p>
-      </div>
-    </main>
+          <p className="mt-2 text-sm text-muted">
+            Workouts will appear here in the next milestone.
+          </p>
+        </div>
+      </section>
+    </>
   );
 }
