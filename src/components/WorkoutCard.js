@@ -9,7 +9,7 @@ export default function WorkoutCard({ workout }) {
       href={`/workout/${workout.id}`}
       className="card-surface group flex flex-col overflow-hidden rounded-2xl transition hover:border-accent"
     >
-      <div className="relative h-40 w-full overflow-hidden bg-black/30">
+      <div className="relative h-48 w-full overflow-hidden bg-black/30">
         <Image
           src={workout.image}
           alt={workout.name}
