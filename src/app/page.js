@@ -16,9 +16,7 @@ export default function HomePage() {
 
     getWorkouts()
       .then((data) => {
-        if (active) {
-          setWorkouts(data);
-        }
+        if (active) setWorkouts(data);
       })
       .catch(() => {
         if (active) {
@@ -26,9 +24,7 @@ export default function HomePage() {
         }
       })
       .finally(() => {
-        if (active) {
-          setLoading(false);
-        }
+        if (active) setLoading(false);
       });
 
     return () => {
